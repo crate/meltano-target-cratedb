@@ -113,7 +113,7 @@ optional-dependencies.release = [
 optional-dependencies.test = [
   "meltano-tap-countries",
   "meltano-tap-fundamentals",
-  "pytest<9",
+  "pytest<10",
   "pytest-cov<8",
   "pytest-mock<4",
 ]
