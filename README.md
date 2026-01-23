@@ -15,8 +15,8 @@
 A [Singer] target for [CrateDB], built with the [Meltano SDK] for custom extractors
 and loaders, and based on the [Meltano PostgreSQL target].
 
-In order to learn more about Singer, Meltano, and friends, navigate to the
-[Singer Intro](./docs/singer-intro.md).
+In order to learn more about Singer, Meltano, and friends, please
+navigate to the [Singer Intro].
 
 Operating the package successfully needs CrateDB 6.2 or higher.
 
@@ -175,6 +175,7 @@ pip_url: --editable=/path/to/sources/meltano-target-cratedb
 [Meltano PostgreSQL target]: https://pypi.org/project/meltanolabs-target-postgres/
 [meltano-target-cratedb]: https://github.com/crate/meltano-target-cratedb
 [Singer]: https://www.singer.io/
+[Singer Intro]: https://lorrystream.readthedocs.io/singer/intro.html
 [Singer Spec]: https://hub.meltano.com/singer/spec/
 [PipelineWise]: https://transferwise.github.io/pipelinewise/
 [PipelineWise Taps]: https://transferwise.github.io/pipelinewise/user_guide/yaml_config.html
