@@ -301,7 +301,7 @@ class CrateDBSink(PostgresSink):
         """
         with self.connector._connect() as connection:
             if isinstance(table, FullyQualifiedName):
-                table_full = str(table)
+                table_full = f'"{table.schema}"."{table.table}"'
             elif isinstance(table, sa.Table):
                 table_full = f'"{table.schema}"."{table.name}"'
             elif isinstance(table, str):

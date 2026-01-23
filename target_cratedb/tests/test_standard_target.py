@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import io
 from contextlib import redirect_stdout
+from typing import Optional
 
 import pytest
 import sqlalchemy as sa
@@ -148,7 +149,7 @@ def singer_file_to_target(file_name, target) -> None:
 def verify_schema(
     target: TargetCrateDB,
     table_name: str,
-    check_columns: dict = None,
+    check_columns: Optional[dict] = None,
 ):
     """Checks whether the schema of a database table matches the provided column definitions.
 
@@ -407,9 +408,9 @@ def test_relational_data(cratedb_target):
         },
     ]
 
-    verify_data("test_users", 8, "id", users)
-    verify_data("test_locations", 5, "id", locations)
-    verify_data("test_user_in_location", 5, "id", user_in_location)
+    verify_data(cratedb_target, "test_users", 8, "id", users)
+    verify_data(cratedb_target, "test_locations", 5, "id", locations)
+    verify_data(cratedb_target, "test_user_in_location", 5, "id", user_in_location)
 
 
 def test_no_primary_keys(cratedb_target):

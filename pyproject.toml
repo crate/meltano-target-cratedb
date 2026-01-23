@@ -131,8 +131,8 @@ scripts.target-cratedb = "target_cratedb.target:TargetCrateDB.cli"
 namespaces = false
 
 [tool.uv.sources]
-meltano-tap-countries = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-countries", rev = "main" }
-meltano-tap-fundamentals = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-fundamentals", rev = "main" }
+meltano-tap-countries = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-countries", rev = "ef455bb" }
+meltano-tap-fundamentals = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-fundamentals", rev = "ef455bb" }
 
 [tool.black]
 line-length = 120
