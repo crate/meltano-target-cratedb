@@ -11,6 +11,7 @@ import pytest
 import sqlalchemy as sa
 from singer_sdk.exceptions import InvalidRecord, MissingKeyPropertiesError
 from singer_sdk.testing import sync_end_to_end
+from sqlalchemy_cratedb.type import FloatVector
 from sqlalchemy_cratedb.type.object import ObjectTypeImpl
 from tap_countries.tap import TapCountries
 from tap_fundamentals import Fundamentals
@@ -96,6 +97,7 @@ def initialize_database(cratedb_config):
     delete_table_names = [
         "melty.array_boolean",
         "melty.array_float",
+        "melty.array_float_vector",
         "melty.array_number",
         "melty.array_string",
         "melty.array_timestamp",
@@ -457,6 +459,26 @@ def test_array_boolean(cratedb_target):
         check_columns={
             "id": {"type": sa.BIGINT},
             "value": {"type": sa.ARRAY},
+        },
+    )
+
+
+@pytest.mark.skip("pgvector patch did not land in upstream target-postgres yet")
+@pytest.mark.skipif(not MELTANO_CRATEDB_STRATEGY_DIRECT, reason="Does not work in temptable/upsert mode")
+def test_array_float_vector(cratedb_target):
+    file_name = "array_float_vector.singer"
+    singer_file_to_target(file_name, cratedb_target)
+    row = {
+        "id": 1,
+        "value": [1.1, 2.1, 1.1, 1.3],
+    }
+    verify_data(cratedb_target, "array_float_vector", 3, "id", row)
+    verify_schema(
+        cratedb_target,
+        "array_float_vector",
+        check_columns={
+            "id": {"type": sa.BIGINT},
+            "value": {"type": FloatVector},
         },
     )
 

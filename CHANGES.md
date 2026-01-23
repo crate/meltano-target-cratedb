@@ -7,6 +7,7 @@
 - Removed workaround for `_`-prefixed column names.
   The package now requires CrateDB 6.2 or higher.
 - Dependencies: Updated to vanilla meltanolabs-target-postgres 0.6
+- Types: Added support for `FLOAT_VECTOR`.
 
 ## 2023-12-08 v0.0.1
 - Make it work. It can run the canonical Meltano GitHub -> DB example.
