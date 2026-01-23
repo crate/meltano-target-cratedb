@@ -1,10 +1,10 @@
 # Singer target / Meltano loader for CrateDB
 
-[![Tests](https://github.com/crate-workbench/meltano-target-cratedb/actions/workflows/main.yml/badge.svg)](https://github.com/crate-workbench/meltano-target-cratedb/actions/workflows/main.yml)
-[![Test coverage](https://img.shields.io/codecov/c/gh/crate-workbench/meltano-target-cratedb.svg)](https://codecov.io/gh/crate-workbench/meltano-target-cratedb/)
+[![Tests](https://github.com/crate/meltano-target-cratedb/actions/workflows/main.yml/badge.svg)](https://github.com/crate/meltano-target-cratedb/actions/workflows/main.yml)
+[![Test coverage](https://img.shields.io/codecov/c/gh/crate/meltano-target-cratedb.svg)](https://codecov.io/gh/crate/meltano-target-cratedb/)
 [![Python versions](https://img.shields.io/pypi/pyversions/meltano-target-cratedb.svg)](https://pypi.org/project/meltano-target-cratedb/)
 
-[![License](https://img.shields.io/github/license/crate-workbench/meltano-target-cratedb.svg)](https://github.com/crate-workbench/meltano-target-cratedb/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/crate/meltano-target-cratedb.svg)](https://github.com/crate/meltano-target-cratedb/blob/main/LICENSE)
 [![Status](https://img.shields.io/pypi/status/meltano-target-cratedb.svg)](https://pypi.org/project/meltano-target-cratedb/)
 [![PyPI](https://img.shields.io/pypi/v/meltano-target-cratedb.svg)](https://pypi.org/project/meltano-target-cratedb/)
 [![Downloads](https://pepy.tech/badge/meltano-target-cratedb/month)](https://pepy.tech/project/meltano-target-cratedb/)
@@ -173,7 +173,7 @@ configure the `pip_url` of the component to point to a different location than t
 
 Use this URL to directly point to a specific Git repository reference.
 ```yaml
-pip_url: git+https://github.com/crate-workbench/meltano-target-cratedb.git@main
+pip_url: git+https://github.com/crate/meltano-target-cratedb.git@main
 ```
 
 Use a `pip`-like notation to link the CrateDB Singer target in development mode,
@@ -194,7 +194,7 @@ pip_url: --editable=/path/to/sources/meltano-target-cratedb
 [meltano | Hub]: https://hub.meltano.com/
 [Meltano SDK]: https://github.com/meltano/sdk
 [Meltano PostgreSQL target]: https://pypi.org/project/meltanolabs-target-postgres/
-[meltano-target-cratedb]: https://github.com/crate-workbench/meltano-target-cratedb
+[meltano-target-cratedb]: https://github.com/crate/meltano-target-cratedb
 [Singer]: https://www.singer.io/
 [Singer Spec]: https://hub.meltano.com/singer/spec/
 [PipelineWise]: https://transferwise.github.io/pipelinewise/

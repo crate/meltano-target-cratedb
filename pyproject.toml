@@ -119,12 +119,13 @@ optional-dependencies.test = [
 ]
 # optional-dependencies.vector = [
 #   "meltanolabs-target-postgres @ git+https://github.com/singer-contrib/meltanolabs-target-postgres.git@pgvector",
+#   "numpy",
 #   "sqlalchemy-cratedb[vector]",
 # ]
-urls.changelog = "https://github.com/crate-workbench/meltano-target-cratedb/blob/main/CHANGES.md"
-urls.documentation = "https://github.com/crate-workbench/meltano-target-cratedb"
-urls.homepage = "https://github.com/crate-workbench/meltano-target-cratedb"
-urls.repository = "https://github.com/crate-workbench/meltano-target-cratedb"
+urls.changelog = "https://github.com/crate/meltano-target-cratedb/blob/main/CHANGES.md"
+urls.documentation = "https://github.com/crate/meltano-target-cratedb"
+urls.issues = "https://github.com/crate/meltano-target-cratedb/issues"
+urls.repository = "https://github.com/crate/meltano-target-cratedb"
 scripts.target-cratedb = "target_cratedb.target:TargetCrateDB.cli"
 
 [tool.setuptools.packages.find]
