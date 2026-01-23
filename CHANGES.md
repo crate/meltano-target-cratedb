@@ -1,7 +1,7 @@
 # Changelog for Meltano/Singer Target for CrateDB
 
 ## In progress
-- Add support for container types `ARRAY`, `OBJECT`, and `FLOAT_VECTOR`.
+- Add support for container types `ARRAY` and `OBJECT`.
 - Improve write operations to be closer to `target-postgres`.
 - Switch to new SQLAlchemy dialect for CrateDB.
 - Removed workaround for `_`-prefixed column names.

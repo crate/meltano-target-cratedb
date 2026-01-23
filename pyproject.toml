@@ -92,11 +92,8 @@ dependencies = [
   "cratedb-toolkit",
   "importlib-resources; python_version<'3.9'", # "meltanolabs-target-postgres==0.0.9",
   "meltanolabs-target-postgres>=0.6,<0.7",
-  "sqlalchemy-cratedb[vector]",
+  "sqlalchemy-cratedb",
   "verlib2<0.4",
-]
-optional-dependencies.all = [
-  "meltano-target-cratedb[vector]",
 ]
 optional-dependencies.develop = [
   "black<27",
@@ -117,11 +114,6 @@ optional-dependencies.test = [
   "pytest-cov<8",
   "pytest-mock<4",
 ]
-# optional-dependencies.vector = [
-#   "meltanolabs-target-postgres @ git+https://github.com/singer-contrib/meltanolabs-target-postgres.git@pgvector",
-#   "numpy",
-#   "sqlalchemy-cratedb[vector]",
-# ]
 urls.changelog = "https://github.com/crate/meltano-target-cratedb/blob/main/CHANGES.md"
 urls.documentation = "https://github.com/crate/meltano-target-cratedb"
 urls.issues = "https://github.com/crate/meltano-target-cratedb/issues"

@@ -11,7 +11,7 @@ from datetime import datetime
 import sqlalchemy as sa
 from singer_sdk import typing as th
 from singer_sdk.helpers._typing import is_array_type, is_boolean_type, is_integer_type, is_number_type, is_object_type
-from sqlalchemy_cratedb.type import FloatVector, ObjectType
+from sqlalchemy_cratedb.type import ObjectType
 from sqlalchemy_cratedb.type.array import _ObjectArray
 from sqlalchemy_cratedb.type.object import ObjectTypeImpl
 from target_postgres.connector import NOTYPE, PostgresConnector
@@ -134,44 +134,6 @@ class CrateDBConnector(PostgresConnector):
         if "object" in jsonschema_type["type"]:
             return ObjectType
         if "array" in jsonschema_type["type"]:
-            # Select between different kinds of `ARRAY` data types.
-            #
-            # This currently leverages an unspecified definition for the Singer SCHEMA,
-            # using the `additionalProperties` attribute to convey additional type
-            # information, agnostic of the target database.
-            #
-            # In this case, it is about telling different kinds of `ARRAY` types apart:
-            # Either it is a vanilla `ARRAY`, to be stored into a `jsonb[]` type, or,
-            # alternatively, it can be a "vector" kind `ARRAY` of floating point
-            # numbers, effectively what pgvector is storing in its `VECTOR` type.
-            #
-            # Still, `type: "vector"` is only a surrogate label here, because other
-            # database systems may use different types for implementing the same thing,
-            # and need to translate accordingly.
-            """
-            Schema override rule in `meltano.yml`:
-
-            type: "array"
-            items:
-              type: "number"
-            additionalProperties:
-              storage:
-                type: "vector"
-                dim: 4
-
-            Produced schema annotation in `catalog.json`:
-
-            {"type": "array",
-             "items": {"type": "number"},
-             "additionalProperties": {"storage": {"type": "vector", "dim": 4}}}
-            """
-            if "additionalProperties" in jsonschema_type and "storage" in jsonschema_type["additionalProperties"]:
-                storage_properties = jsonschema_type["additionalProperties"]["storage"]
-                if "type" in storage_properties and storage_properties["type"] == "vector":
-                    # On PostgreSQL/pgvector, use the corresponding type definition
-                    # from its SQLAlchemy dialect.
-                    return FloatVector(dimensions=storage_properties["dim"])
-
             # Discover/translate inner types.
             inner_type = resolve_array_inner_type(jsonschema_type)
             if inner_type is not None:
@@ -201,7 +163,6 @@ class CrateDBConnector(PostgresConnector):
         """
         precedence_order = [
             sa.ARRAY,
-            FloatVector,
             ObjectTypeImpl,
             sa.TEXT,
             sa.TIMESTAMP,
@@ -252,8 +213,6 @@ class CrateDBConnector(PostgresConnector):
             _len = int(getattr(sql_type, "length", 0) or 0)
 
             if isinstance(sql_type, _ObjectArray):
-                return 0, _len
-            if isinstance(sql_type, FloatVector):
                 return 0, _len
             if isinstance(sql_type, NOTYPE):
                 return 0, _len
