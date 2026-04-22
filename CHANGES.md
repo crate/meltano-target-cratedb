@@ -1,6 +1,8 @@
 # Changelog for Meltano/Singer Target for CrateDB
 
 ## In progress
+
+## 2026-04-22 v0.1.0
 - Meltano: Started using `SQLConnector.jsonschema_to_sql` to map
   schema types to SQL types
 - Type mapping: Started to verify mapping `ARRAY(OBJECT)` works well
