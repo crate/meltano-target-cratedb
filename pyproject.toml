@@ -107,8 +107,8 @@ optional-dependencies.release = [
   "twine<7",
 ]
 optional-dependencies.test = [
-  "meltano-tap-countries",
-  "meltano-tap-fundamentals",
+  "tap-countries",
+  "tap-fundamentals",
   "pytest<10",
   "pytest-cov<8",
   "pytest-mock<4",
@@ -123,8 +123,8 @@ scripts.target-cratedb = "target_cratedb.target:TargetCrateDB.cli"
 packages.find.namespaces = false
 
 [tool.uv]
-sources.meltano-tap-countries = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-countries", rev = "ef455bb" }
-sources.meltano-tap-fundamentals = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-fundamentals", rev = "ef455bb" }
+sources.tap-countries = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/tap-countries", rev = "26a687e" }
+sources.tap-fundamentals = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/tap-fundamentals", rev = "26a687e" }
 
 [tool.black]
 line-length = 120
