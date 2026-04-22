@@ -74,7 +74,7 @@ class CrateDBConnector(PostgresConnector):
         Note: Needs to be patched to supply handler for `ObjectTypeImpl`.
         """
         to_sql = super().jsonschema_to_sql
-        to_sql.register_sql_datatype_handler("integer", sa.BIGINT)
+        to_sql.register_type_handler("integer", sa.BIGINT)
         to_sql.register_type_handler("object", ObjectTypeImpl)
         return to_sql
 
@@ -110,12 +110,14 @@ class CrateDBConnector(PostgresConnector):
                         json_type_dict["contentEncoding"] = encoding
                     # Figure out array type, but only if there's a single type
                     # (no array union types)
-                    if (
-                        "items" in jsonschema_type
-                        and "type" in jsonschema_type["items"]
-                        and isinstance(jsonschema_type["items"]["type"], str)
-                    ):
-                        json_type_dict["items"] = jsonschema_type["items"]["type"]
+                    items = jsonschema_type.get("items") or {}
+                    item_type = items.get("type")
+                    if isinstance(item_type, str):
+                        json_type_dict["items"] = item_type
+                    elif isinstance(item_type, list):
+                        non_null = [t_ for t_ in item_type if t_ != "null"]
+                        if len(non_null) == 1:
+                            json_type_dict["items"] = non_null[0]
                     json_type_array.append(json_type_dict)
             else:
                 msg = "Invalid format for jsonschema type: not str or list."
