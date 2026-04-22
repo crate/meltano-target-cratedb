@@ -7,11 +7,10 @@ import typing as t
 from builtins import issubclass  # noqa: A004
 from contextlib import contextmanager
 from datetime import datetime
+from functools import cached_property
 
 import sqlalchemy as sa
-from singer_sdk import typing as th
-from singer_sdk.helpers._typing import is_array_type, is_boolean_type, is_integer_type, is_number_type, is_object_type
-from sqlalchemy_cratedb.type import ObjectType
+from singer_sdk.sql.connector import JSONSchemaToSQL
 from sqlalchemy_cratedb.type.array import _ObjectArray
 from sqlalchemy_cratedb.type.object import ObjectTypeImpl
 from target_postgres.connector import NOTYPE, PostgresConnector
@@ -67,8 +66,19 @@ class CrateDBConnector(PostgresConnector):
         if Version(cratedb_version) < Version("6.2"):
             raise ConnectionError("The connector requires CrateDB 6.2 or higher")
 
-    @staticmethod
-    def to_sql_type(jsonschema_type: dict) -> sa.types.TypeEngine:
+    @cached_property
+    def jsonschema_to_sql(self) -> JSONSchemaToSQL:
+        """
+        Return a JSONSchemaToSQL instance with custom type handling.
+
+        Note: Needs to be patched to supply handler for `ObjectTypeImpl`.
+        """
+        to_sql = super().jsonschema_to_sql
+        to_sql.register_sql_datatype_handler("integer", sa.BIGINT)
+        to_sql.register_type_handler("object", ObjectTypeImpl)
+        return to_sql
+
+    def to_sql_type(self, jsonschema_type: dict) -> sa.types.TypeEngine:
         """Return a JSON Schema representation of the provided type.
 
         Note: Needs to be patched to invoke other static methods on `CrateDBConnector`.
@@ -93,61 +103,36 @@ class CrateDBConnector(PostgresConnector):
                 json_type_array.append(jsonschema_type)
             elif isinstance(jsonschema_type["type"], list):
                 for entry in jsonschema_type["type"]:
-                    json_type_dict = {}
-                    json_type_dict["type"] = entry
+                    json_type_dict = {"type": entry}
                     if jsonschema_type.get("format", False):
                         json_type_dict["format"] = jsonschema_type["format"]
+                    if encoding := jsonschema_type.get("contentEncoding", False):
+                        json_type_dict["contentEncoding"] = encoding
+                    # Figure out array type, but only if there's a single type
+                    # (no array union types)
+                    if (
+                        "items" in jsonschema_type
+                        and "type" in jsonschema_type["items"]
+                        and isinstance(jsonschema_type["items"]["type"], str)
+                    ):
+                        json_type_dict["items"] = jsonschema_type["items"]["type"]
                     json_type_array.append(json_type_dict)
             else:
                 msg = "Invalid format for jsonschema type: not str or list."
                 raise RuntimeError(msg)
         elif jsonschema_type.get("anyOf", False):
-            for entry in jsonschema_type["anyOf"]:
-                json_type_array.append(entry)
+            json_type_array.extend(iter(jsonschema_type["anyOf"]))
         else:
             msg = "Neither type nor anyOf are present. Unable to determine type. " "Defaulting to string."
             return NOTYPE()
         sql_type_array = []
         for json_type in json_type_array:
-            picked_type = CrateDBConnector.pick_individual_type(jsonschema_type=json_type)
+            picked_type = self.pick_individual_type(jsonschema_type=json_type)
             if picked_type is not None:
                 sql_type_array.append(picked_type)
 
-        return CrateDBConnector.pick_best_sql_type(sql_type_array=sql_type_array)
-
-    @staticmethod
-    def pick_individual_type(jsonschema_type: dict):
-        """Select the correct sql type assuming jsonschema_type has only a single type.
-
-        Note: Needs to be patched to supply handlers for `object` and `array`.
-
-        Args:
-            jsonschema_type: A jsonschema_type array containing only a single type.
-
-        Returns:
-            An instance of the appropriate SQL type class based on jsonschema_type.
-        """
-        if "null" in jsonschema_type["type"]:
-            return None
-        if "integer" in jsonschema_type["type"]:
-            return sa.BIGINT()
-        if "object" in jsonschema_type["type"]:
-            return ObjectType
-        if "array" in jsonschema_type["type"]:
-            # Discover/translate inner types.
-            inner_type = resolve_array_inner_type(jsonschema_type)
-            if inner_type is not None:
-                return sa.ARRAY(inner_type)
-
-            # When type discovery fails, assume `TEXT`.
-            return sa.ARRAY(sa.TEXT())
-
-        if jsonschema_type.get("format") == "date-time":
-            return sa.TIMESTAMP()
-        individual_type = th.to_sql_type(jsonschema_type)
-        if isinstance(individual_type, sa.VARCHAR):
-            return sa.TEXT()
-        return individual_type
+        # NOTE: Adjustment for CrateDB.
+        return self.pick_best_sql_type(sql_type_array=sql_type_array)
 
     @staticmethod
     def pick_best_sql_type(sql_type_array: list):
@@ -163,6 +148,7 @@ class CrateDBConnector(PostgresConnector):
         """
         precedence_order = [
             sa.ARRAY,
+            # NOTE: Adjustment for CrateDB.
             ObjectTypeImpl,
             sa.TEXT,
             sa.TIMESTAMP,
@@ -274,18 +260,3 @@ class CrateDBConnector(PostgresConnector):
         Don't emit `CREATE SCHEMA` statements to CrateDB.
         """
         pass
-
-
-def resolve_array_inner_type(jsonschema_type: dict) -> t.Union[sa.types.TypeEngine, None]:
-    if "items" in jsonschema_type:
-        if is_boolean_type(jsonschema_type["items"]):
-            return sa.BOOLEAN()
-        if is_number_type(jsonschema_type["items"]):
-            return sa.FLOAT()
-        if is_integer_type(jsonschema_type["items"]):
-            return sa.BIGINT()
-        if is_object_type(jsonschema_type["items"]):
-            return ObjectType()
-        if is_array_type(jsonschema_type["items"]):
-            return resolve_array_inner_type(jsonschema_type["items"]["type"])
-    return None
