@@ -1,6 +1,8 @@
 # Changelog for Meltano/Singer Target for CrateDB
 
 ## In progress
+- Meltano: Started using `SQLConnector.jsonschema_to_sql` to map
+  schema types to SQL types
 
 ## 2026-01-23 v0.0.2
 - Added support for container types `ARRAY` and `OBJECT`.

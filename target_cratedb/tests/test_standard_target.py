@@ -174,8 +174,8 @@ def verify_schema(
                 raise ValueError(f"Invalid check_columns - missing definition for column: {column.name}") from ex
             if not isinstance(column.type, column_type_expected):
                 raise TypeError(
-                    f"Column '{column.name}' (with type '{column.type}') "
-                    f"does not match expected type: {column_type_expected}"
+                    f"Column '{column.name}' with SQL type {column.type} and Python type {type(column.type)} "
+                    f"does not match expected Python type {column_type_expected}."
                 )
     engine.dispose()
 
