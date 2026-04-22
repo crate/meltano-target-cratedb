@@ -119,22 +119,19 @@ urls.issues = "https://github.com/crate/meltano-target-cratedb/issues"
 urls.repository = "https://github.com/crate/meltano-target-cratedb"
 scripts.target-cratedb = "target_cratedb.target:TargetCrateDB.cli"
 
-[tool.setuptools.packages.find]
-namespaces = false
+[tool.setuptools]
+packages.find.namespaces = false
 
-[tool.uv.sources]
-meltano-tap-countries = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-countries", rev = "ef455bb" }
-meltano-tap-fundamentals = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-fundamentals", rev = "ef455bb" }
+[tool.uv]
+sources.meltano-tap-countries = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-countries", rev = "ef455bb" }
+sources.meltano-tap-fundamentals = { git = "https://github.com/meltano/sdk.git", subdirectory = "packages/meltano-tap-fundamentals", rev = "ef455bb" }
 
 [tool.black]
 line-length = 120
 
 [tool.ruff]
 line-length = 120
-
-extend-exclude = [
-]
-
+extend-exclude = []
 lint.select = [
   # Builtins
   "A",
@@ -162,7 +159,6 @@ lint.select = [
   # flake8-2020
   "YTT",
 ]
-
 lint.extend-ignore = [
   # zip() without an explicit strict= parameter
   "B905",
@@ -177,85 +173,75 @@ lint.per-file-ignores."*/tests/*" = [
   "S101", # Allow use of `assert`, and `print`.
   "S608", # Possible SQL injection vector through string-based query construction.
 ]
-lint.per-file-ignores."examples/*" = [ "T201" ] # Allow `print`
+lint.per-file-ignores."examples/*" = [ "T201" ]  # Allow `print`
 lint.flake8-import-conventions.banned-from = [ "typing" ]
 lint.flake8-import-conventions.extend-aliases.typing = "t"
 
-[tool.pytest.ini_options]
-addopts = """
-  -rfEXs -p pytester --strict-markers --verbosity=3
-  --cov --cov-report=term-missing --cov-report=xml
-  """
-minversion = "2.0"
-log_level = "DEBUG"
-log_cli_level = "DEBUG"
-log_format = "%(asctime)-15s [%(name)-36s] %(levelname)-8s: %(message)s"
-testpaths = [
-  "examples",
-  "target_cratedb",
-  "tests",
-]
-xfail_strict = true
-markers = [
-]
-
-[tool.coverage.run]
-branch = false
-omit = [
-  "tests/*",
-]
-source = [ "target_cratedb" ]
-
-[tool.coverage.report]
-fail_under = 0
-show_missing = true
-
 [tool.mypy]
 packages = [ "target_cratedb" ]
-exclude = [
-]
+exclude = []
 check_untyped_defs = true
 ignore_missing_imports = true
 implicit_optional = true
 install_types = true
 non_interactive = true
 
-[tool.versioningit.vcs]
-method = "git"
-default-tag = "0.0.0"
+[tool.pytest]
+ini_options.addopts = """
+  -rfEXs -p pytester --strict-markers --verbosity=3
+  --cov --cov-report=term-missing --cov-report=xml
+  """
+ini_options.minversion = "2.0"
+ini_options.log_level = "DEBUG"
+ini_options.log_cli_level = "DEBUG"
+ini_options.log_format = "%(asctime)-15s [%(name)-36s] %(levelname)-8s: %(message)s"
+ini_options.testpaths = [
+  "examples",
+  "target_cratedb",
+  "tests",
+]
+ini_options.xfail_strict = true
+ini_options.markers = []
 
+[tool.coverage]
+run.branch = false
+run.omit = [
+  "tests/*",
+]
+run.source = [ "target_cratedb" ]
+report.fail_under = 0
+report.show_missing = true
+
+[tool.poe]
 # ===================
 # Tasks configuration
 # ===================
-
-[tool.poe.tasks]
-
-check = [
+tasks.check = [
   "lint",
   "test",
 ]
-
-format = [
+tasks.format = [
   { cmd = "black ." },
   # Configure Ruff not to auto-fix (remove!):
   # unused imports (F401), unused variables (F841), `print` statements (T201), and commented-out code (ERA001).
   { cmd = "ruff check --fix --ignore=ERA --ignore=F401 --ignore=F841 --ignore=T20 --ignore=ERA001 ." },
   { cmd = "pyproject-fmt pyproject.toml" },
 ]
-
-lint = [
+tasks.lint = [
   { cmd = "ruff check ." },
   { cmd = "black --check ." },
   { cmd = "validate-pyproject pyproject.toml" },
   { cmd = "mypy" },
 ]
-
-release = [
+tasks.release = [
   { cmd = "python -m build" },
   { cmd = "twine upload dist/*" },
 ]
-
-test = [
+tasks.test = [
   { shell = "MELTANO_CRATEDB_STRATEGY_DIRECT=true pytest" },
   { shell = "MELTANO_CRATEDB_STRATEGY_DIRECT=false pytest" },
 ]
+
+[tool.versioningit]
+vcs.method = "git"
+vcs.default-tag = "0.0.0"
