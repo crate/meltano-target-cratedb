@@ -11,6 +11,7 @@ import pytest
 import sqlalchemy as sa
 from singer_sdk.exceptions import InvalidRecord, MissingKeyPropertiesError
 from singer_sdk.testing import sync_end_to_end
+from sqlalchemy_cratedb.type.array import _ObjectArray
 from sqlalchemy_cratedb.type.object import ObjectTypeImpl
 from tap_countries.tap import TapCountries
 from tap_fundamentals import Fundamentals
@@ -97,6 +98,7 @@ def initialize_database(cratedb_config):
         "melty.array_boolean",
         "melty.array_float",
         "melty.array_number",
+        "melty.array_object",
         "melty.array_string",
         "melty.array_timestamp",
         "melty.commits",
@@ -472,6 +474,21 @@ def test_array_number(cratedb_target):
         check_columns={
             "id": {"type": sa.BIGINT},
             "value": {"type": sa.ARRAY},
+        },
+    )
+
+
+def test_array_object(cratedb_target):
+    file_name = "array_object.singer"
+    singer_file_to_target(file_name, cratedb_target)
+    row = {"id": 1, "value": [{"name": "Hotzenplotz", "value": 42.42}]}
+    verify_data(cratedb_target, "array_object", 1, "id", row)
+    verify_schema(
+        cratedb_target,
+        "array_object",
+        check_columns={
+            "id": {"type": sa.BIGINT},
+            "value": {"type": _ObjectArray},
         },
     )
 

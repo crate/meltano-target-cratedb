@@ -1,0 +1,3 @@
+{"type": "SCHEMA", "stream": "array_object", "key_properties": ["id"], "schema": {"required": ["id"], "type": "object", "properties": {"id": {"type": "integer"}, "value": {"type": "array", "items": {"type": "object"}}}}}
+{"type": "RECORD", "stream": "array_object", "record": {"id": 1, "value": [ {"name": "Hotzenplotz", "value": 42.42} ]}}
+{"type": "STATE", "value": {"array_object": 1}}
