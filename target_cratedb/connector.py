@@ -78,64 +78,6 @@ class CrateDBConnector(PostgresConnector):
         to_sql.register_type_handler("object", ObjectTypeImpl)
         return to_sql
 
-    def to_sql_type(self, jsonschema_type: dict) -> sa.types.TypeEngine:
-        """Return a JSON Schema representation of the provided type.
-
-        Note: Needs to be patched to invoke other static methods on `CrateDBConnector`.
-
-        By default will call `typing.to_sql_type()`.
-
-        Developers may override this method to accept additional input argument types,
-        to support non-standard types, or to provide custom typing logic.
-        If overriding this method, developers should call the default implementation
-        from the base class for all unhandled cases.
-
-        Args:
-            jsonschema_type: The JSON Schema representation of the source type.
-
-        Returns:
-            The SQLAlchemy type representation of the data type.
-        """
-        json_type_array = []
-
-        if jsonschema_type.get("type", False):
-            if isinstance(jsonschema_type["type"], str):
-                json_type_array.append(jsonschema_type)
-            elif isinstance(jsonschema_type["type"], list):
-                for entry in jsonschema_type["type"]:
-                    json_type_dict = {"type": entry}
-                    if jsonschema_type.get("format", False):
-                        json_type_dict["format"] = jsonschema_type["format"]
-                    if encoding := jsonschema_type.get("contentEncoding", False):
-                        json_type_dict["contentEncoding"] = encoding
-                    # Figure out array type, but only if there's a single type
-                    # (no array union types)
-                    items = jsonschema_type.get("items") or {}
-                    item_type = items.get("type")
-                    if isinstance(item_type, str):
-                        json_type_dict["items"] = item_type
-                    elif isinstance(item_type, list):
-                        non_null = [t_ for t_ in item_type if t_ != "null"]
-                        if len(non_null) == 1:
-                            json_type_dict["items"] = non_null[0]
-                    json_type_array.append(json_type_dict)
-            else:
-                msg = "Invalid format for jsonschema type: not str or list."
-                raise RuntimeError(msg)
-        elif jsonschema_type.get("anyOf", False):
-            json_type_array.extend(iter(jsonschema_type["anyOf"]))
-        else:
-            msg = "Neither type nor anyOf are present. Unable to determine type. " "Defaulting to string."
-            return NOTYPE()
-        sql_type_array = []
-        for json_type in json_type_array:
-            picked_type = self.pick_individual_type(jsonschema_type=json_type)
-            if picked_type is not None:
-                sql_type_array.append(picked_type)
-
-        # NOTE: Adjustment for CrateDB.
-        return self.pick_best_sql_type(sql_type_array=sql_type_array)
-
     @staticmethod
     def pick_best_sql_type(sql_type_array: list):
         """Select the best SQL type from an array of instances of SQL type classes.

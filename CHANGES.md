@@ -1,6 +1,7 @@
 # Changelog for Meltano/Singer Target for CrateDB
 
 ## In progress
+- Updated to `meltanolabs-target-postgres` 0.7. Thanks, @edgarrmondragon.
 
 ## 2026-05-12 v0.1.1
 - Downgraded to `requests` 0.32, to fix `NameError: name 'RequestsCookieJar' is not defined`
