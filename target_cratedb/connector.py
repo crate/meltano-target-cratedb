@@ -71,47 +71,40 @@ class CrateDBConnector(PostgresConnector):
         """
         Return a JSONSchemaToSQL instance with custom type handling.
 
-        Note: Needs to be patched to supply handler for `ObjectTypeImpl`.
+        Note: Needs to be patched to supply handler for `ObjectTypeImpl`
+              and a custom `_handle_array_type`.
         """
         to_sql = super().jsonschema_to_sql
         to_sql.register_type_handler("integer", sa.BIGINT)
         to_sql.register_type_handler("object", ObjectTypeImpl)
+        to_sql.register_type_handler("array", self._handle_array_type)
         return to_sql
 
-    @staticmethod
-    def pick_best_sql_type(sql_type_array: list):
-        """Select the best SQL type from an array of instances of SQL type classes.
+    def _handle_array_type(self, jsonschema: dict) -> sa.ARRAY | _ObjectArray:
+        """Handle array type."""
+        items = jsonschema.get("items")
+        # Case 1: items is a string
+        if isinstance(items, str):
+            return sa.ARRAY(self.to_sql_type({"type": items}))
 
-        Note: Needs to be patched to supply handler for `ObjectTypeImpl`.
+        # Case 2: items are more complex
+        if isinstance(items, dict):
+            # Case 2.1: items are variants
+            if "type" not in items:
+                return _ObjectArray()
 
-        Args:
-            sql_type_array: The array of instances of SQL type classes.
+            items_type = items["type"]
 
-        Returns:
-            An instance of the best SQL type class based on defined precedence order.
-        """
-        precedence_order = [
-            sa.ARRAY,
-            # NOTE: Adjustment for CrateDB.
-            ObjectTypeImpl,
-            sa.TEXT,
-            sa.TIMESTAMP,
-            sa.DATETIME,
-            sa.DATE,
-            sa.TIME,
-            sa.DECIMAL,
-            sa.FLOAT,
-            sa.BIGINT,
-            sa.INTEGER,
-            sa.BOOLEAN,
-            NOTYPE,
-        ]
+            # Case 2.2: items are a single type
+            if isinstance(items_type, str):
+                return sa.ARRAY(self.to_sql_type({"type": items_type}))
 
-        for sql_type in precedence_order:
-            for obj in sql_type_array:
-                if isinstance(obj, sql_type):
-                    return obj
-        return sa.TEXT()
+            # Case 2.3: items are a list of types
+            if isinstance(items_type, list):
+                return sa.ARRAY(self.to_sql_type({"type": items_type}))
+
+        # Case 3: tuples
+        return _ObjectArray() if isinstance(items, list) else ObjectTypeImpl()
 
     def _sort_types(
         self,
