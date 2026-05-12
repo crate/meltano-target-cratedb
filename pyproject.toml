@@ -32,9 +32,7 @@ keywords = [
   "transformation",
 ]
 license = "MIT"
-authors = [
-  { name = "Andreas Motl", email = "andreas.motl@crate.io" },
-]
+authors = [ { name = "Crate.io", email = "office@crate.io" } ]
 requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -108,11 +106,11 @@ optional-dependencies.release = [
   "twine<7",
 ]
 optional-dependencies.test = [
-  "tap-countries",
-  "tap-fundamentals",
   "pytest<10",
   "pytest-cov<8",
   "pytest-mock<4",
+  "tap-countries",
+  "tap-fundamentals",
 ]
 urls.changelog = "https://github.com/crate/meltano-target-cratedb/blob/main/CHANGES.md"
 urls.documentation = "https://github.com/crate/meltano-target-cratedb"
