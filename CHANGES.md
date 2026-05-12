@@ -1,6 +1,8 @@
 # Changelog for Meltano/Singer Target for CrateDB
 
 ## In progress
+
+## 2026-05-12 v0.1.1
 - Downgraded to `requests` 0.32, to fix `NameError: name 'RequestsCookieJar' is not defined`
 
 ## 2026-04-22 v0.1.0
