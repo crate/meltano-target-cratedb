@@ -1,6 +1,8 @@
 # Changelog for Meltano/Singer Target for CrateDB
 
 ## In progress
+
+## 2026-05-14 v0.3.0
 - Updated to `meltanolabs-target-postgres` 0.8. Thanks, @edgarrmondragon.
 
 ## 2026-05-12 v0.2.0
