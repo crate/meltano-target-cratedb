@@ -89,7 +89,7 @@ dependencies = [
   "cratedb-toolkit",
   "importlib-resources; python_version<'3.9'", # "meltanolabs-target-postgres==0.0.9",
   "meltanolabs-target-postgres>=0.7,<0.8",
-  "requests<2.34",
+  "requests<2.35",
   "sqlalchemy-cratedb",
   "verlib2<0.4",
 ]
