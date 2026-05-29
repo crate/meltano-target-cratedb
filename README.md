@@ -12,7 +12,8 @@
 
 ## About
 
-A [Singer] target for [CrateDB], built with the [Meltano SDK] for custom extractors
+[meltano|Hub » target-cratedb] is a [Singer] target for [CrateDB],
+built with the [Meltano SDK] for custom extractors
 and loaders, and based on the [Meltano PostgreSQL target].
 
 In order to learn more about Singer, Meltano, and friends, please
@@ -174,6 +175,7 @@ pip_url: --editable=/path/to/sources/meltano-target-cratedb
 [Meltano SDK]: https://github.com/meltano/sdk
 [Meltano PostgreSQL target]: https://pypi.org/project/meltanolabs-target-postgres/
 [meltano-target-cratedb]: https://github.com/crate/meltano-target-cratedb
+[meltano|Hub » target-cratedb]: https://hub.meltano.com/loaders/target-cratedb/
 [Singer]: https://www.singer.io/
 [Singer Intro]: https://lorrystream.readthedocs.io/singer/intro.html
 [Singer Spec]: https://hub.meltano.com/singer/spec/
