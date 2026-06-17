@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import io
+import traceback
 from contextlib import redirect_stdout
 from typing import Optional
 
@@ -284,7 +285,10 @@ def test_record_missing_required_property(cratedb_target):
     with pytest.raises(InvalidRecord) as e:
         file_name = "record_missing_required_property.singer"
         singer_file_to_target(file_name, cratedb_target)
-    assert "Record Message Validation Error: 'id' is a required property" in str(e.value)
+    formatted_exc = "".join(traceback.format_exception(e.value))
+    assert (
+        "Record Message Validation Error: 1 schema validation error(s)\n$: 'id' is a required property" in formatted_exc
+    )
 
 
 @pytest.mark.skipif(not MELTANO_CRATEDB_STRATEGY_DIRECT, reason="Does not work in temptable/upsert mode")
