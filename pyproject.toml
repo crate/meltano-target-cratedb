@@ -112,7 +112,7 @@ optional-dependencies.test = [
   "pytest-mock<4",
 ]
 urls.changelog = "https://github.com/crate/meltano-target-cratedb/blob/main/CHANGES.md"
-urls.documentation = "https://github.com/crate/meltano-target-cratedb"
+urls.documentation = "https://hub.meltano.com/loaders/target-cratedb/"
 urls.issues = "https://github.com/crate/meltano-target-cratedb/issues"
 urls.repository = "https://github.com/crate/meltano-target-cratedb"
 scripts.target-cratedb = "target_cratedb.target:TargetCrateDB.cli"
